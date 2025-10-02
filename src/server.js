@@ -1,3 +1,4 @@
+
 import 'dotenv/config'; 
 import express from 'express';
 import cors from 'cors';
@@ -9,18 +10,14 @@ import { errorHandler } from './middleware/errorHandler.js';
 import notesRouter from './routes/notesRoutes.js';
 
 const PORT = process.env.PORT || 3030;
-
 const startServer = async () => {
+  
   await connectMongoDB();
   const app = express();
- 
+  
   app.use(cors()); 
   app.use(express.json()); 
   app.use(logger); 
-  app.get('/test-error', (req, res, next) => {
-    throw new Error('Simulated server error');
-  });
-
   app.use('/notes', notesRouter); 
   app.use(notFoundHandler);
   app.use(errorHandler);
@@ -29,4 +26,5 @@ const startServer = async () => {
     console.log(`Access at http://localhost:${PORT}`);
   });
 };
+
 startServer();
