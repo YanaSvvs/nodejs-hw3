@@ -44,3 +44,4 @@ export const updateNoteSchema = Joi.object({
   content: Joi.string().allow(''),
   tag: Joi.string().valid(...TAGS),
 }).min(1); 
+
