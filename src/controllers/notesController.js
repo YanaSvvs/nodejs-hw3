@@ -1,33 +1,38 @@
-
 import { Note } from '../models/note.js';
 import createHttpError from 'http-errors';
+import { isValidObjectId } from 'mongoose';
 
 export const getAllNotes = async (req, res, next) => {
   try {
-   
-    const { page, perPage, tag, search } = req.query;
-    const filter = {};
+    const { page = 1, perPage = 10, tag, search } = req.query;
+    const currentPage = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
+    const itemsPerPage = parseInt(perPage, 10) > 0 ? parseInt(perPage, 10) : 10; 
+    const skip = (currentPage - 1) * itemsPerPage;
+
+    let baseQuery = Note.find();
+    
     if (tag) {
-      filter.tag = tag; 
+      baseQuery = baseQuery.where('tag').equals(tag);
     }
+   
     if (search) {
-      
-      filter.$or = [
-        { title: { $regex: search, $options: 'i' } }, 
-        { content: { $regex: search, $options: 'i' } },
-      ];
+      const searchRegex = { $regex: search, $options: 'i' };
+      baseQuery = baseQuery.or([
+        { title: searchRegex }, 
+        { content: searchRegex }
+      ]);
     }
-    
-    const totalNotes = await Note.countDocuments(filter); 
-    const totalPages = Math.ceil(totalNotes / perPage);
-    const skip = (page - 1) * perPage; 
-    const notes = await Note.find(filter)
-      .skip(skip)
-      .limit(perPage);
-    
+   
+    const countQuery = baseQuery.clone().countDocuments();
+    const notesQuery = baseQuery.skip(skip).limit(itemsPerPage);
+    const [totalNotes, notes] = await Promise.all([
+      countQuery,
+      notesQuery,
+    ]);
+    const totalPages = Math.ceil(totalNotes / itemsPerPage);
     res.status(200).json({
-      page: Number(page),
-      perPage: Number(perPage),
+      page: currentPage,
+      perPage: itemsPerPage,
       totalNotes: totalNotes,
       totalPages: totalPages,
       notes: notes,
@@ -40,8 +45,10 @@ export const getAllNotes = async (req, res, next) => {
 export const getNoteById = async (req, res, next) => {
   try {
     const { noteId } = req.params;
+    if (!isValidObjectId(noteId)) {
+      return next(createHttpError(400, 'Invalid note ID format'));
+    }
     const note = await Note.findById(noteId);
-
     if (!note) {
       return next(createHttpError(404, 'Note not found'));
     }
@@ -64,15 +71,19 @@ export const updateNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
     const updateData = req.body;
+
+    if (!isValidObjectId(noteId)) {
+      return next(createHttpError(400, 'Invalid note ID format'));
+    }
+    
     const updatedNote = await Note.findByIdAndUpdate(noteId, updateData, {
-      new: true,
+      new: true, 
       runValidators: true, 
     });
 
     if (!updatedNote) {
       return next(createHttpError(404, 'Note not found'));
     }
-
     res.status(200).json(updatedNote);
   } catch (error) {
     next(error);
@@ -82,6 +93,9 @@ export const updateNote = async (req, res, next) => {
 export const deleteNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
+    if (!isValidObjectId(noteId)) {
+      return next(createHttpError(400, 'Invalid note ID format'));
+    }
     const deletedNote = await Note.findByIdAndDelete(noteId);
     if (!deletedNote) {
       return next(createHttpError(404, 'Note not found'));
@@ -91,4 +105,3 @@ export const deleteNote = async (req, res, next) => {
     next(error);
   }
 };
-
