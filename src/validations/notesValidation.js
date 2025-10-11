@@ -20,7 +20,7 @@ export const noteIdSchema = {
 
 export const getAllNotesSchema = {
   query: Joi.object({
-   
+    
     page: Joi.number().integer().min(1).default(1).messages({
       'number.base': 'Page must be a number',
       'number.min': 'Page must be greater than or equal to 1',
@@ -45,6 +45,7 @@ export const createNoteSchema = {
 };
 
 export const updateNoteSchema = {
+  params: noteIdSchema.params, 
   body: Joi.object({
     title: Joi.string().min(1),
     content: Joi.string().allow(''),

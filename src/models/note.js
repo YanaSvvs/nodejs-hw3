@@ -7,12 +7,14 @@ const noteSchema = new Schema(
       type: String,
       required: true,
       trim: true, 
+      index: 'text', 
     },
     content: {
       type: String,
       required: false,
       default: '', 
       trim: true,
+      index: 'text', 
     },
     tag: {
       type: String,
