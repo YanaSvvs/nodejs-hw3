@@ -1,7 +1,19 @@
-import pinoHttp from 'pino-http';
+import pino from 'pino';
 
-export const logger = pinoHttp({
-  transport: {
-    target: 'pino-pretty', 
-  },
+export const logger = pino({
+    level: 'info',
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            colorize: true,
+            translateTime: 'HH:MM:ss',
+            ignore: 'pid,hostname',
+            messageFormat: '{req.method} {req.url} {res.statusCode} {responseTime}ms',
+        },
+    },
+    messageKey: 'message',
+    formatters: {
+        level: (label) => ({ level: label }),
+    },
 });
+

@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { celebrate, Segments } from 'celebrate';
 import {
@@ -12,7 +11,7 @@ import {
     getAllNotesSchema,
     noteIdSchema,
     createNoteSchema,
-    updateNoteBodySchema, 
+    updateNoteBodySchema,
 } from '../validations/notesValidation.js'; 
 
 const router = Router();
@@ -31,14 +30,14 @@ router.post(
 
 router.get(
     '/notes/:noteId',
-    celebrate({ [Segments.PARAMS]: noteIdSchema }), 
+    celebrate(noteIdSchema), 
     getNoteById,
 );
 
 router.patch(
     '/notes/:noteId',
     celebrate({
-        [Segments.PARAMS]: noteIdSchema, 
+        [Segments.PARAMS]: noteIdSchema.extract(Segments.PARAMS), 
         [Segments.BODY]: updateNoteBodySchema, 
     }),
     updateNote,
@@ -46,7 +45,7 @@ router.patch(
 
 router.delete(
     '/notes/:noteId',
-    celebrate({ [Segments.PARAMS]: noteIdSchema }), 
+    celebrate(noteIdSchema), 
     deleteNote,
 );
 
