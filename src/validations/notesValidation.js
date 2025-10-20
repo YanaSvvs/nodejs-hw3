@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { Types } from 'mongoose';
 import { TAGS } from '../constants/tags.js';
+import { Segments } from 'celebrate'; 
 
 const isValidObjectId = (value, helpers) => {
     if (!Types.ObjectId.isValid(value)) {
@@ -9,35 +10,31 @@ const isValidObjectId = (value, helpers) => {
     return value;
 };
 
-export const noteIdSchema = Joi.object({
-    [Joi.Segment.PARAMS]: Joi.object({
-        noteId: Joi.string()
-            .custom(isValidObjectId, 'Mongoose ID validation')
-            .required()
-            .messages({
-                'any.required': 'noteId is required in parameters',
-                'any.invalid': 'Invalid note ID format',
-                'string.base': 'noteId must be a string',
-            }),
-    }),
-});
+export const noteIdParamsSchema = Joi.object({
+    noteId: Joi.string()
+        .custom(isValidObjectId, 'Mongoose ID validation')
+        .required()
+        .messages({
+            'any.required': 'noteId is required in parameters',
+            'any.invalid': 'Invalid note ID format',
+            'string.base': 'noteId must be a string',
+        }),
+}); 
 
 export const createNoteSchema = Joi.object({
-    [Joi.Segment.BODY]: Joi.object({
-        title: Joi.string().min(1).required().messages({
-            'string.base': 'Title must be a string',
-            'string.min': 'Title should have at least 1 character(s)',
-            'any.required': 'Title is required',
-        }),
-        content: Joi.string().allow('').messages({
-            'string.base': 'Content must be a string',
-        }),
-        tag: Joi.string().valid(...TAGS).messages({
-            'string.base': 'Tag must be a string',
-            'any.only': `Tag must be one of [${TAGS.join(', ')}]`,
-        }),
-    }).required(),
-});
+    title: Joi.string().min(1).required().messages({
+        'string.base': 'Title must be a string',
+        'string.min': 'Title should have at least 1 character(s)',
+        'any.required': 'Title is required',
+    }),
+    content: Joi.string().allow('').messages({
+        'string.base': 'Content must be a string',
+    }),
+    tag: Joi.string().valid(...TAGS).messages({
+        'string.base': 'Tag must be a string',
+        'any.only': `Tag must be one of [${TAGS.join(', ')}]`,
+    }),
+}).required();
 
 export const updateNoteBodySchema = Joi.object({
     title: Joi.string().min(1).messages({
@@ -56,12 +53,12 @@ export const updateNoteBodySchema = Joi.object({
 });
 
 export const updateNoteSchema = Joi.object({
-    [Joi.Segment.PARAMS]: noteIdSchema.extract(Joi.Segment.PARAMS).required(),
-    [Joi.Segment.BODY]: updateNoteBodySchema,
+    [Segments.PARAMS]: noteIdParamsSchema, 
+    [Segments.BODY]: updateNoteBodySchema,
 });
 
 export const getAllNotesSchema = Joi.object({
-    [Joi.Segment.QUERY]: Joi.object({
+    [Segments.QUERY]: Joi.object({
         page: Joi.number().integer().min(1).default(1).messages({
             'number.base': 'Page must be a number',
             'number.integer': 'Page must be an integer',

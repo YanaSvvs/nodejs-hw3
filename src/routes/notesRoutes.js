@@ -9,7 +9,7 @@ import {
 } from '../controllers/notesController.js';
 import {
     getAllNotesSchema,
-    noteIdSchema,
+    noteIdParamsSchema, 
     createNoteSchema,
     updateNoteBodySchema,
 } from '../validations/notesValidation.js'; 
@@ -18,7 +18,7 @@ const router = Router();
 
 router.get(
     '/notes',
-    celebrate({ [Segments.QUERY]: getAllNotesSchema }), 
+    celebrate(getAllNotesSchema), 
     getAllNotes,
 );
 
@@ -30,14 +30,14 @@ router.post(
 
 router.get(
     '/notes/:noteId',
-    celebrate(noteIdSchema), 
+    celebrate({ [Segments.PARAMS]: noteIdParamsSchema }), 
     getNoteById,
 );
 
 router.patch(
     '/notes/:noteId',
     celebrate({
-        [Segments.PARAMS]: noteIdSchema.extract(Segments.PARAMS), 
+        [Segments.PARAMS]: noteIdParamsSchema, 
         [Segments.BODY]: updateNoteBodySchema, 
     }),
     updateNote,
@@ -45,7 +45,7 @@ router.patch(
 
 router.delete(
     '/notes/:noteId',
-    celebrate(noteIdSchema), 
+    celebrate({ [Segments.PARAMS]: noteIdParamsSchema }), 
     deleteNote,
 );
 
