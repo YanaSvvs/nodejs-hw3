@@ -21,6 +21,10 @@ export const noteIdParamsSchema = Joi.object({
         }),
 }); 
 
+export const noteIdSchema = Joi.object({
+    [Segments.PARAMS]: noteIdParamsSchema,
+}); 
+
 export const createNoteSchema = Joi.object({
     title: Joi.string().min(1).required().messages({
         'string.base': 'Title must be a string',
@@ -35,6 +39,10 @@ export const createNoteSchema = Joi.object({
         'any.only': `Tag must be one of [${TAGS.join(', ')}]`,
     }),
 }).required();
+
+export const createNoteFullSchema = Joi.object({
+    [Segments.BODY]: createNoteSchema,
+}); 
 
 export const updateNoteBodySchema = Joi.object({
     title: Joi.string().min(1).messages({

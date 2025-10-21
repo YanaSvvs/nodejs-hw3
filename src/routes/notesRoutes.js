@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { celebrate, Segments } from 'celebrate';
+import { celebrate } from 'celebrate';
 import {
     getAllNotes,
     getNoteById,
@@ -9,9 +9,9 @@ import {
 } from '../controllers/notesController.js';
 import {
     getAllNotesSchema,
-    noteIdParamsSchema, 
-    createNoteSchema,
-    updateNoteBodySchema,
+    noteIdSchema, 
+    createNoteFullSchema, 
+    updateNoteSchema, 
 } from '../validations/notesValidation.js'; 
 
 const router = Router();
@@ -24,28 +24,25 @@ router.get(
 
 router.post(
     '/notes',
-    celebrate({ [Segments.BODY]: createNoteSchema }), 
+    celebrate(createNoteFullSchema), 
     createNote,
 );
 
 router.get(
     '/notes/:noteId',
-    celebrate({ [Segments.PARAMS]: noteIdParamsSchema }), 
+    celebrate(noteIdSchema), 
     getNoteById,
 );
 
 router.patch(
     '/notes/:noteId',
-    celebrate({
-        [Segments.PARAMS]: noteIdParamsSchema, 
-        [Segments.BODY]: updateNoteBodySchema, 
-    }),
+    celebrate(updateNoteSchema), 
     updateNote,
 );
 
 router.delete(
     '/notes/:noteId',
-    celebrate({ [Segments.PARAMS]: noteIdParamsSchema }), 
+    celebrate(noteIdSchema), 
     deleteNote,
 );
 
