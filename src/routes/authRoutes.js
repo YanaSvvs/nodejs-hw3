@@ -1,6 +1,7 @@
-
 import { Router } from 'express';
-import { validate } from 'celebrate';
+import pkg from 'celebrate';
+const { validate } = pkg; 
+
 import { registerUserSchema, loginUserSchema } from '../validations/authValidation.js';
 import {
   registerUser,
