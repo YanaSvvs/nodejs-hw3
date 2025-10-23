@@ -9,18 +9,14 @@ export const getAllNotes = async (req, res, next) => {
     const itemsPerPage = parseInt(perPage, 10) > 0 ? parseInt(perPage, 10) : 10; 
     const skip = (currentPage - 1) * itemsPerPage;
 
-    const filter = {};
-    
+    const filter = { userId: req.user._id };
     if (tag) {
       filter.tag = tag;
     }
-    
     if (search) {
       filter.$text = { $search: search };
     }
-    
     let baseQuery = Note.find(filter); 
-
     const countQuery = baseQuery.clone().countDocuments();
     const notesQuery = baseQuery.skip(skip).limit(itemsPerPage);
     
@@ -42,14 +38,13 @@ export const getAllNotes = async (req, res, next) => {
     next(error);
   }
 };
-
 export const getNoteById = async (req, res, next) => {
   try {
     const { noteId } = req.params;
     if (!isValidObjectId(noteId)) {
       return next(createHttpError(400, 'Invalid note ID format'));
     }
-    const note = await Note.findById(noteId);
+    const note = await Note.findOne({ _id: noteId, userId: req.user._id }); 
     if (!note) {
       return next(createHttpError(404, 'Note not found'));
     }
@@ -58,30 +53,29 @@ export const getNoteById = async (req, res, next) => {
     next(error);
   }
 };
-
 export const createNote = async (req, res, next) => {
   try {
-    const newNote = await Note.create(req.body); 
+    const newNote = await Note.create({ ...req.body, userId: req.user._id }); 
     res.status(201).json(newNote);
   } catch (error) {
     next(error);
   }
 };
-
 export const updateNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
     const updateData = req.body;
-
     if (!isValidObjectId(noteId)) {
       return next(createHttpError(400, 'Invalid note ID format'));
     }
-    
-    const updatedNote = await Note.findByIdAndUpdate(noteId, updateData, {
-      new: true, 
-      runValidators: true, 
-    });
-
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: noteId, userId: req.user._id }, 
+      updateData, 
+      {
+        new: true, 
+        runValidators: true, 
+      }
+    );
     if (!updatedNote) {
       return next(createHttpError(404, 'Note not found'));
     }
@@ -90,14 +84,13 @@ export const updateNote = async (req, res, next) => {
     next(error);
   }
 };
-
 export const deleteNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
     if (!isValidObjectId(noteId)) {
       return next(createHttpError(400, 'Invalid note ID format'));
     }
-    const deletedNote = await Note.findByIdAndDelete(noteId);
+    const deletedNote = await Note.findOneAndDelete({ _id: noteId, userId: req.user._id });
     if (!deletedNote) {
       return next(createHttpError(404, 'Note not found'));
     }
