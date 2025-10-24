@@ -11,7 +11,6 @@ import notesRouter from './routes/notesRoutes.js';
 import authRouter from './routes/authRoutes.js'; 
 
 const PORT = process.env.PORT || 3030;
-
 const startServer = async () => {
     await connectMongoDB();
     const app = express();
