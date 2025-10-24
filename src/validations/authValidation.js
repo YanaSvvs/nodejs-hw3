@@ -1,6 +1,5 @@
 
-import pkg from 'celebrate';
-const { Joi } = pkg;
+import { Joi } from 'celebrate';
 
 export const registerUserSchema = {
   body: Joi.object({

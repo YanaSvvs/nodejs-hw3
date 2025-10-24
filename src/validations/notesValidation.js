@@ -1,7 +1,6 @@
-import Joi from 'joi';
+import { Joi, Segments } from 'celebrate';
 import { Types } from 'mongoose';
 import { TAGS } from '../constants/tags.js';
-import { Segments } from 'celebrate'; 
 
 const isValidObjectId = (value, helpers) => {
     if (!Types.ObjectId.isValid(value)) {
