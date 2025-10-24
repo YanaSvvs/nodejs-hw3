@@ -1,6 +1,6 @@
-import { Joi, Segments } from 'celebrate';
+import Joi from 'joi'; 
 import { Types } from 'mongoose';
-import { TAGS } from '../constants/tags.js';
+import { TAGS } from '../constants/tags.js'; 
 
 const isValidObjectId = (value, helpers) => {
     if (!Types.ObjectId.isValid(value)) {
@@ -20,10 +20,6 @@ export const noteIdParamsSchema = Joi.object({
         }),
 }); 
 
-export const noteIdSchema = Joi.object({
-    [Segments.PARAMS]: noteIdParamsSchema,
-}); 
-
 export const createNoteSchema = Joi.object({
     title: Joi.string().min(1).required().messages({
         'string.base': 'Title must be a string',
@@ -38,10 +34,6 @@ export const createNoteSchema = Joi.object({
         'any.only': `Tag must be one of [${TAGS.join(', ')}]`,
     }),
 }).required();
-
-export const createNoteFullSchema = Joi.object({
-    [Segments.BODY]: createNoteSchema,
-}); 
 
 export const updateNoteBodySchema = Joi.object({
     title: Joi.string().min(1).messages({
@@ -59,30 +51,23 @@ export const updateNoteBodySchema = Joi.object({
     'object.min': 'Request body must contain at least one field to update',
 });
 
-export const updateNoteSchema = Joi.object({
-    [Segments.PARAMS]: noteIdParamsSchema, 
-    [Segments.BODY]: updateNoteBodySchema,
-});
-
-export const getAllNotesSchema = Joi.object({
-    [Segments.QUERY]: Joi.object({
-        page: Joi.number().integer().min(1).default(1).messages({
-            'number.base': 'Page must be a number',
-            'number.integer': 'Page must be an integer',
-            'number.min': 'Page must be greater than or equal to 1',
-        }),
-        perPage: Joi.number().integer().min(5).max(20).default(10).messages({
-            'number.base': 'Per Page must be a number',
-            'number.integer': 'Per Page must be an integer',
-            'number.min': 'Per Page must be greater than or equal to 5',
-            'number.max': 'Per Page must be less than or equal to 20',
-        }),
-        tag: Joi.string().valid(...TAGS).messages({
-            'string.base': 'Tag must be a string',
-            'any.only': `Tag must be one of [${TAGS.join(', ')}]`,
-        }),
-        search: Joi.string().allow('').messages({
-            'string.base': 'Search query must be a string',
-        }),
+export const getAllNotesQuerySchema = Joi.object({
+    page: Joi.number().integer().min(1).default(1).messages({
+        'number.base': 'Page must be a number',
+        'number.integer': 'Page must be an integer',
+        'number.min': 'Page must be greater than or equal to 1',
+    }),
+    perPage: Joi.number().integer().min(5).max(20).default(10).messages({
+        'number.base': 'Per Page must be a number',
+        'number.integer': 'Per Page must be an integer',
+        'number.min': 'Per Page must be greater than or equal to 5',
+        'number.max': 'Per Page must be less than or equal to 20',
+    }),
+    tag: Joi.string().valid(...TAGS).messages({
+        'string.base': 'Tag must be a string',
+        'any.only': `Tag must be one of [${TAGS.join(', ')}]`,
+    }),
+    search: Joi.string().allow('').messages({
+        'string.base': 'Search query must be a string',
     }),
 });
