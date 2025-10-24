@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { Types } from 'mongoose';
 import { TAGS } from '../constants/tags.js';
 import { Segments } from 'celebrate'; 
