@@ -1,13 +1,18 @@
 
-import Joi from 'joi'; 
+import Joi from 'joi';
 
-export const registerUserSchema = Joi.object({ 
- email: Joi.string().email().required(),
-  password: Joi.string().min(8).required(),
-  username: Joi.string().optional(),
+export const requestResetEmailSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.email': 'Email must be a valid email address.',
+    'any.required': 'Email is required.',
+  }),
 });
 
-export const loginUserSchema = Joi.object({
-email: Joi.string().email().required(),
- password: Joi.string().required(),
+export const resetPasswordSchema = Joi.object({
+  token: Joi.string().required().messages({
+    'any.required': 'Token is required.',
+  }),
+  password: Joi.string().required().messages({
+    'any.required': 'New password is required.',
+  }),
 });

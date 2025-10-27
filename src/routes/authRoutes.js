@@ -1,9 +1,12 @@
+
 import { Router } from 'express';
 import { celebrate } from 'celebrate'; 
 
 import { 
     registerUserSchema, 
-    loginUserSchema 
+    loginUserSchema,
+    requestResetEmailSchema,
+    resetPasswordSchema,
 } from '../validations/authValidation.js'; 
 
 import {
@@ -11,15 +14,27 @@ import {
     loginUser,
     refreshUserSession,
     logoutUser,
+    requestResetEmail,
+    resetPassword,
 } from '../controllers/authController.js'; 
 
 const authRouter = Router();
 
-// ВИКОРИСТАННЯ CELEBRATE ДЛЯ ВАЛІДАЦІЇ body
 authRouter.post('/register', celebrate({ body: registerUserSchema }), registerUser); 
 authRouter.post('/login', celebrate({ body: loginUserSchema }), loginUser); 
-
 authRouter.post('/refresh', refreshUserSession); 
 authRouter.post('/logout', logoutUser);
+
+authRouter.post(
+    '/request-reset-email', 
+    celebrate({ body: requestResetEmailSchema }), 
+    requestResetEmail
+); 
+
+authRouter.post(
+    '/reset-password', 
+    celebrate({ body: resetPasswordSchema }), 
+    resetPassword
+);
 
 export default authRouter;
