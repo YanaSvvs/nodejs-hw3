@@ -1,15 +1,15 @@
+
 import { Router } from 'express';
 import { celebrate } from 'celebrate'; 
-
 import {
     getAllNotes, getNoteById, createNote, updateNote, deleteNote,
 } from '../controllers/notesController.js'; 
 
 import {
-    getAllNotesSchema, 
-    noteIdSchema, 
+    getAllNotesQuerySchema, 
+    noteIdParamsSchema, 
     createNoteSchema, 
-    updateNoteSchema, 
+    updateNoteBodySchema, 
 } from '../validations/notesValidation.js'; 
 
 import { authenticate } from '../middleware/authenticate.js'; 
@@ -19,7 +19,7 @@ router.use(authenticate);
 
 router.get(
     '/notes',
-    celebrate({ query: getAllNotesSchema }),
+    celebrate({ query: getAllNotesQuerySchema }), 
     getAllNotes,
 );
 
@@ -31,19 +31,20 @@ router.post(
 
 router.get(
     '/notes/:noteId',
-    celebrate({ params: noteIdSchema }),
+    celebrate({ params: noteIdParamsSchema }), 
     getNoteById,
 );
 
 router.patch(
     '/notes/:noteId',
-    celebrate({ params: noteIdSchema, body: updateNoteSchema }),
+    celebrate({ params: noteIdParamsSchema, body: updateNoteBodySchema }), 
     updateNote,
 );
 
 router.delete(
     '/notes/:noteId',
-    celebrate({ params: noteIdSchema }),
+    celebrate({ params: noteIdParamsSchema }),
     deleteNote,
 );
+
 export default router;
