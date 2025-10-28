@@ -5,7 +5,7 @@ import createHttpError from 'http-errors';
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
-  secure: false, 
+  secure: false,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD,
@@ -15,14 +15,15 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (options) => {
   try {
     const mailOptions = {
-      from: process.env.SMTP_FROM, 
+      from: process.env.SMTP_FROM,
       to: options.to,
       subject: options.subject,
       html: options.html,
     };
 
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
     console.log(`Email sent to ${options.to}`);
+    return info; 
 
   } catch (error) {
     console.error('Nodemailer Error:', error);
