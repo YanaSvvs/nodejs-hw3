@@ -1,6 +1,6 @@
-
 import { model, Schema } from 'mongoose';
 
+const DEFAULT_AVATAR_URL = 'https://default-avatar-url.com/placeholder.png'; 
 const userSchema = new Schema(
   {
     username: {
@@ -18,10 +18,11 @@ const userSchema = new Schema(
       required: true,
       minlength: 8,
     },
-   
+    
     avatar: {
       type: String,
-      default: null, 
+      
+      default: DEFAULT_AVATAR_URL, 
     },
   },
   { timestamps: true },
