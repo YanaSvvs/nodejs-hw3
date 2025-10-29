@@ -3,7 +3,8 @@ import { Session } from '../models/session.js';
 import { FIFTEEN_MINUTES, ONE_DAY } from '../constants/time.js';
 import createHttpError from 'http-errors'; 
 
-const generateToken = () => crypto.randomBytes(32).toString('base64');
+// !!! ДОДАЄМО 'export' !!!
+export const generateToken = () => crypto.randomBytes(32).toString('base64');
 
 const validationHandler = (schema, targetGetter) => (req, res, next) => {
     const { error } = schema.validate(targetGetter(req), { abortEarly: false }); 
@@ -18,6 +19,7 @@ const validationHandler = (schema, targetGetter) => (req, res, next) => {
 export const validateBody = (schema) => validationHandler(schema, req => req.body);
 export const validateQuery = (schema) => validationHandler(schema, req => req.query);
 export const validateParams = (schema) => validationHandler(schema, req => req.params);
+
 export const createSession = async (userId) => {
     const accessToken = generateToken();
     const refreshToken = generateToken();
